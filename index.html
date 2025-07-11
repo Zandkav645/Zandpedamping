@@ -24,7 +24,7 @@
         }
         
         h1 {
-            font-size: 3rem;
+            font-size: 2.5rem;
             margin-bottom: 1rem;
             background: linear-gradient(90deg, #64ffda, #3aafa9);
             -webkit-background-clip: text;
@@ -46,7 +46,7 @@
         }
         
         .description {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             line-height: 1.6;
             margin-bottom: 2rem;
             color: #8892b0;
@@ -56,21 +56,13 @@
             background: linear-gradient(45deg, #9d4edd, #7b2cbf);
             color: white;
             border: none;
-            padding: 1rem 2rem;
-            font-size: 1.2rem;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(157, 78, 221, 0.3);
-        }
-        
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(157, 78, 221, 0.4);
-        }
-        
-        .btn:active {
-            transform: translateY(1px);
+            margin: 0.5rem;
         }
         
         .chat-container {
@@ -78,31 +70,26 @@
             background-color: #112240;
             border-radius: 10px;
             padding: 1rem;
-            margin-top: 2rem;
+            margin-top: 1rem;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
         
-        .chat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid #233554;
-        }
-        
         .chat-messages {
-            height: 400px;
+            height: 300px;
             overflow-y: auto;
             padding: 1rem;
-            text-align: left;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            background-color: #0a192f;
         }
         
         .message {
-            margin-bottom: 1rem;
-            padding: 0.8rem;
+            margin-bottom: 0.8rem;
+            padding: 0.6rem 0.8rem;
             border-radius: 8px;
             max-width: 80%;
             word-wrap: break-word;
+            line-height: 1.4;
         }
         
         .user-message {
@@ -117,13 +104,13 @@
         
         .chat-input {
             display: flex;
-            margin-top: 1rem;
+            margin-top: 0.5rem;
         }
         
         .chat-input input {
             flex: 1;
-            padding: 0.8rem;
-            border: none;
+            padding: 0.6rem 0.8rem;
+            border: 1px solid #233554;
             border-radius: 50px 0 0 50px;
             background-color: #233554;
             color: white;
@@ -131,50 +118,26 @@
         }
         
         .chat-input button {
-            padding: 0.8rem 1.5rem;
+            padding: 0.6rem 1rem;
             border: none;
             border-radius: 0 50px 50px 0;
             background-color: #9d4edd;
             color: white;
             cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        
-        .chat-input button:hover {
-            background-color: #7b2cbf;
-        }
-        
-        .chat-input button:disabled {
-            background-color: #5a189a;
-            cursor: not-allowed;
-        }
-        
-        .typing-indicator {
-            display: none;
-            color: #64ffda;
-            font-style: italic;
         }
         
         .error-message {
             color: #ff6b6b;
-            margin-top: 0.5rem;
-            text-align: center;
-            display: none;
-        }
-        
-        .clear-btn {
-            background-color: #ff6b6b;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            margin-top: 1rem;
-            cursor: pointer;
+            margin: 0.5rem 0;
             font-size: 0.9rem;
         }
         
-        .clear-btn:hover {
-            background-color: #ff4757;
+        .typing-indicator {
+            color: #64ffda;
+            font-style: italic;
+            font-size: 0.9rem;
+            margin: 0.5rem 0;
+            display: none;
         }
     </style>
 </head>
@@ -182,50 +145,35 @@
     <div class="container">
         <h1>Selamat Datang Di Web AI <span class="zandkav">ZanDKav</span></h1>
         <p class="description">
-            AI ZanDKav adalah asisten virtual cerdas yang siap membantu Anda 24/7. 
-            Dengan kecerdasan buatan tingkat tinggi berbasis DeepSeek AI, saya dapat menjawab pertanyaan, 
-            memberikan saran, membantu dalam pekerjaan, dan menjadi teman bicara yang informatif. 
-            Cobalah bertanya apa saja!
+            AI ZanDKav adalah asisten virtual cerdas berbasis DeepSeek AI yang siap membantu Anda.
         </p>
-        <button class="btn" id="startBtn">Mulai Chat dengan AI ZanDKav</button>
+        <button class="btn" id="startBtn">Mulai Chat</button>
         
         <div class="chat-container" id="chatContainer">
-            <div class="chat-header">
-                <h3>AI ZanDKav (DeepSeek AI)</h3>
-                <span class="typing-indicator" id="typingIndicator">Mengetik...</span>
-            </div>
             <div class="chat-messages" id="chatMessages">
                 <div class="message ai-message">
-                    Halo! Saya AI ZanDKav yang didukung oleh DeepSeek AI. Bagaimana saya bisa membantu Anda hari ini?
+                    Halo! Saya AI ZanDKav. Ada yang bisa saya bantu?
                 </div>
             </div>
+            
+            <div class="typing-indicator" id="typingIndicator">AI sedang mengetik...</div>
+            <div class="error-message" id="errorMessage"></div>
+            
             <div class="chat-input">
                 <input type="text" id="userInput" placeholder="Ketik pesan Anda..." autocomplete="off">
                 <button id="sendBtn">Kirim</button>
             </div>
-            <div class="error-message" id="errorMessage"></div>
-            <button class="clear-btn" id="clearBtn">Bersihkan Percakapan</button>
+            
+            <button class="btn" id="clearBtn" style="margin-top: 0.8rem; background: #ff6b6b;">Bersihkan Percakapan</button>
         </div>
     </div>
 
     <script>
-        // API Configuration
-        const API_KEY = 'sk-33591c940eba48afa01842cdfd747996';
+        // Konfigurasi API
+        const API_KEY = 'sk-33591c940eba48afa01842cdfd747996'; // Ganti dengan API key yang valid
         const API_URL = 'https://api.deepseek.com/v1/chat/completions';
         
-        // Conversation history
-        let conversationHistory = [
-            {
-                role: "system",
-                content: "Anda adalah AI ZanDKav, asisten AI yang ramah dan membantu. Gunakan bahasa Indonesia yang baik dan santun. Jika pertanyaan dalam bahasa Inggris, jawablah dalam bahasa Inggris. Berikan jawaban yang informatif dan jelas."
-            },
-            {
-                role: "assistant",
-                content: "Halo! Saya AI ZanDKav yang didukung oleh DeepSeek AI. Bagaimana saya bisa membantu Anda hari ini?"
-            }
-        ];
-        
-        // DOM Elements
+        // Elemen UI
         const startBtn = document.getElementById('startBtn');
         const chatContainer = document.getElementById('chatContainer');
         const chatMessages = document.getElementById('chatMessages');
@@ -235,144 +183,122 @@
         const errorMessage = document.getElementById('errorMessage');
         const clearBtn = document.getElementById('clearBtn');
         
-        // Event Listeners
-        startBtn.addEventListener('click', startChat);
-        sendBtn.addEventListener('click', sendMessage);
-        userInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                sendMessage();
+        // Riwayat percakapan
+        let conversationHistory = [
+            {
+                role: "system",
+                content: "Anda adalah AI ZanDKav, asisten AI yang ramah dan membantu. Gunakan bahasa Indonesia yang baik dan santun."
+            },
+            {
+                role: "assistant",
+                content: "Halo! Saya AI ZanDKav. Ada yang bisa saya bantu?"
             }
-        });
-        clearBtn.addEventListener('click', clearConversation);
+        ];
         
-        function startChat() {
+        // Event listeners
+        startBtn.addEventListener('click', () => {
             startBtn.style.display = 'none';
             document.querySelector('.description').style.display = 'none';
             chatContainer.style.display = 'block';
             userInput.focus();
-        }
+        });
+        
+        sendBtn.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+        clearBtn.addEventListener('click', clearConversation);
         
         async function sendMessage() {
             const message = userInput.value.trim();
+            if (!message) return;
             
-            if (message) {
-                // Clear previous error
-                errorMessage.style.display = 'none';
-                errorMessage.textContent = '';
-                
-                // Display user message
-                displayMessage(message, 'user');
-                
-                // Add to conversation history
-                conversationHistory.push({
-                    role: "user",
-                    content: message
+            // Tampilkan pesan pengguna
+            addMessage(message, 'user');
+            conversationHistory.push({ role: "user", content: message });
+            userInput.value = '';
+            
+            // Persiapan permintaan AI
+            typingIndicator.style.display = 'block';
+            errorMessage.textContent = '';
+            userInput.disabled = true;
+            sendBtn.disabled = true;
+            
+            try {
+                // Permintaan ke API DeepSeek
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: "deepseek-chat",
+                        messages: conversationHistory,
+                        temperature: 0.7,
+                        max_tokens: 800
+                    })
                 });
                 
-                // Clear input and disable during processing
-                userInput.value = '';
-                userInput.disabled = true;
-                sendBtn.disabled = true;
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error?.message || `Error ${response.status}`);
+                }
                 
-                // Show typing indicator
-                typingIndicator.style.display = 'block';
+                const data = await response.json();
+                const aiResponse = data.choices[0].message.content;
                 
-                try {
-                    // Get AI response
-                    const aiResponse = await getDeepSeekResponse(conversationHistory);
-                    
-                    // Add to conversation history
-                    conversationHistory.push({
-                        role: "assistant",
-                        content: aiResponse
-                    });
-                    
-                    // Display AI response
-                    displayMessage(aiResponse, 'ai');
-                    
-                } catch (error) {
-                    console.error('Error:', error);
-                    errorMessage.textContent = 'Terjadi kesalahan: ' + (error.message || 'Silakan coba lagi');
-                    errorMessage.style.display = 'block';
-                    
-                    // Display fallback message
-                    const fallbackMessage = "Maaf, saya mengalami kesalahan teknis. Silakan coba lagi nanti atau periksa koneksi internet Anda.";
-                    displayMessage(fallbackMessage, 'ai');
-                    
-                } finally {
-                    // Reset UI states
-                    typingIndicator.style.display = 'none';
-                    userInput.disabled = false;
-                    sendBtn.disabled = false;
-                    userInput.focus();
-                    
-                    // Limit conversation history to prevent too large requests
-                    if (conversationHistory.length > 10) {
-                        conversationHistory = conversationHistory.slice(-10);
-                        // Ensure system message is always first
-                        if (conversationHistory[0].role !== "system") {
-                            conversationHistory.unshift({
-                                role: "system",
-                                content: "Anda adalah AI ZanDKav..."
-                            });
-                        }
-                    }
+                // Tambahkan respon ke riwayat dan tampilkan
+                conversationHistory.push({ role: "assistant", content: aiResponse });
+                addMessage(aiResponse, 'ai');
+                
+            } catch (error) {
+                console.error('Error:', error);
+                errorMessage.textContent = `Error: ${error.message}`;
+                
+                // Beri respon default jika API gagal
+                const fallbackResponse = "Maaf, terjadi kesalahan. Silakan coba lagi nanti.";
+                addMessage(fallbackResponse, 'ai');
+                conversationHistory.push({ role: "assistant", content: fallbackResponse });
+                
+            } finally {
+                typingIndicator.style.display = 'none';
+                userInput.disabled = false;
+                sendBtn.disabled = false;
+                userInput.focus();
+                
+                // Batasi riwayat percakapan
+                if (conversationHistory.length > 8) {
+                    conversationHistory = [
+                        conversationHistory[0], // Pertahankan system message
+                        ...conversationHistory.slice(-7)
+                    ];
                 }
             }
         }
         
-        async function getDeepSeekResponse(messages) {
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${API_KEY}`
-                },
-                body: JSON.stringify({
-                    model: "deepseek-chat",
-                    messages: messages,
-                    temperature: 0.7,
-                    max_tokens: 1000
-                })
-            });
-            
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error("API Error:", errorData);
-                throw new Error(`Gagal memproses permintaan (Status: ${response.status})`);
-            }
-            
-            const data = await response.json();
-            return data.choices[0].message.content;
-        }
-        
-        function displayMessage(content, sender) {
-            const messageElement = document.createElement('div');
-            messageElement.className = `message ${sender}-message`;
-            messageElement.textContent = content;
-            chatMessages.appendChild(messageElement);
+        function addMessage(content, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+            messageDiv.textContent = content;
+            chatMessages.appendChild(messageDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
         
         function clearConversation() {
-            // Reset conversation history
             conversationHistory = [
                 {
                     role: "system",
-                    content: "Anda adalah AI ZanDKav, asisten AI yang ramah dan membantu. Gunakan bahasa Indonesia yang baik dan santun. Jika pertanyaan dalam bahasa Inggris, jawablah dalam bahasa Inggris. Berikan jawaban yang informatif dan jelas."
+                    content: "Anda adalah AI ZanDKav, asisten AI yang ramah dan membantu. Gunakan bahasa Indonesia yang baik dan santun."
                 },
                 {
                     role: "assistant",
-                    content: "Percakapan telah direset. Halo lagi! Ada yang bisa saya bantu?"
+                    content: "Percakapan telah direset. Ada yang bisa saya bantu?"
                 }
             ];
             
-            // Clear chat messages
             chatMessages.innerHTML = '';
-            displayMessage("Percakapan telah direset. Halo lagi! Ada yang bisa saya bantu?", 'ai');
-            
-            // Clear any errors
-            errorMessage.style.display = 'none';
+            addMessage("Percakapan telah direset. Ada yang bisa saya bantu?", 'ai');
             errorMessage.textContent = '';
         }
     </script>
