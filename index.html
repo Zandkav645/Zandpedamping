@@ -142,6 +142,12 @@
             color: #64ffda;
             font-style: italic;
         }
+        
+        .error-message {
+            color: #ff6b6b;
+            margin-top: 0.5rem;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -149,7 +155,7 @@
         <h1>Selamat Datang Di Web AI <span class="zandkav">ZanDKav</span></h1>
         <p class="description">
             AI ZanDKav adalah asisten virtual cerdas yang siap membantu Anda 24/7. 
-            Dengan kecerdasan buatan tingkat tinggi seperti ChatGPT, saya dapat menjawab pertanyaan, 
+            Dengan kecerdasan buatan tingkat tinggi berbasis DeepSeek AI, saya dapat menjawab pertanyaan, 
             memberikan saran, membantu dalam pekerjaan, dan menjadi teman bicara yang informatif. 
             Cobalah bertanya apa saja!
         </p>
@@ -157,26 +163,44 @@
         
         <div class="chat-container" id="chatContainer">
             <div class="chat-header">
-                <h3>AI ZanDKav</h3>
+                <h3>AI ZanDKav (DeepSeek AI)</h3>
                 <span class="typing-indicator" id="typingIndicator">Mengetik...</span>
             </div>
             <div class="chat-messages" id="chatMessages">
                 <div class="message ai-message">
-                    Halo! Saya AI ZanDKav. Bagaimana saya bisa membantu Anda hari ini?
+                    Halo! Saya AI ZanDKav yang didukung oleh DeepSeek AI. Bagaimana saya bisa membantu Anda hari ini?
                 </div>
             </div>
             <div class="chat-input">
-                <input type="text" id="userInput" placeholder="Ketik pesan Anda...">
+                <input type="text" id="userInput" placeholder="Ketik pesan Anda..." autocomplete="off">
                 <button id="sendBtn">Kirim</button>
             </div>
+            <div class="error-message" id="errorMessage"></div>
         </div>
     </div>
 
     <script>
+        // API Configuration
+        const API_KEY = 'sk-33591c940eba48afa01842cdfd747996';
+        const API_URL = 'https://api.deepseek.com/v1/chat/completions';
+        
+        // Conversation history
+        let conversationHistory = [
+            {
+                role: "system",
+                content: "Anda adalah AI ZanDKav, asisten AI yang ramah dan membantu. Gunakan bahasa Indonesia yang baik dan santun. Jika pertanyaan dalam bahasa Inggris, jawablah dalam bahasa Inggris."
+            },
+            {
+                role: "assistant",
+                content: "Halo! Saya AI ZanDKav yang didukung oleh DeepSeek AI. Bagaimana saya bisa membantu Anda hari ini?"
+            }
+        ];
+        
         document.getElementById('startBtn').addEventListener('click', function() {
             this.style.display = 'none';
             document.querySelector('.description').style.display = 'none';
             document.getElementById('chatContainer').style.display = 'block';
+            document.getElementById('userInput').focus();
         });
         
         document.getElementById('sendBtn').addEventListener('click', sendMessage);
@@ -186,11 +210,14 @@
             }
         });
         
-        function sendMessage() {
+        async function sendMessage() {
             const userInput = document.getElementById('userInput');
             const message = userInput.value.trim();
             
             if (message) {
+                // Clear any previous error messages
+                document.getElementById('errorMessage').textContent = '';
+                
                 // Tampilkan pesan pengguna
                 const chatMessages = document.getElementById('chatMessages');
                 const userMessage = document.createElement('div');
@@ -198,7 +225,15 @@
                 userMessage.textContent = message;
                 chatMessages.appendChild(userMessage);
                 
+                // Add to conversation history
+                conversationHistory.push({
+                    role: "user",
+                    content: message
+                });
+                
                 userInput.value = '';
+                userInput.disabled = true;
+                document.getElementById('sendBtn').disabled = true;
                 
                 // Tampilkan indikator mengetik
                 const typingIndicator = document.getElementById('typingIndicator');
@@ -207,52 +242,57 @@
                 // Scroll ke bawah
                 chatMessages.scrollTop = chatMessages.scrollHeight;
                 
-                // Simulasikan pemrosesan AI (dalam aplikasi nyata, ini akan menjadi panggilan API)
-                setTimeout(() => {
-                    typingIndicator.style.display = 'none';
+                try {
+                    // Get AI response from DeepSeek API
+                    const aiResponse = await getDeepSeekResponse(conversationHistory);
                     
-                    // Dapatkan respon AI
-                    const aiResponse = getAIResponse(message);
+                    // Add AI response to conversation history
+                    conversationHistory.push({
+                        role: "assistant",
+                        content: aiResponse
+                    });
                     
                     // Tampilkan respon AI
                     const aiMessage = document.createElement('div');
                     aiMessage.className = 'message ai-message';
                     aiMessage.textContent = aiResponse;
                     chatMessages.appendChild(aiMessage);
+                } catch (error) {
+                    console.error('Error:', error);
+                    document.getElementById('errorMessage').textContent = 'Terjadi kesalahan saat memproses permintaan. Silakan coba lagi.';
+                } finally {
+                    typingIndicator.style.display = 'none';
+                    userInput.disabled = false;
+                    document.getElementById('sendBtn').disabled = false;
+                    userInput.focus();
                     
                     // Scroll ke bawah
                     chatMessages.scrollTop = chatMessages.scrollHeight;
-                }, 1500);
+                }
             }
         }
         
-        function getAIResponse(message) {
-            // Ini adalah contoh sederhana. Dalam aplikasi nyata, Anda akan menggunakan API AI seperti OpenAI
-            const lowerMessage = message.toLowerCase();
+        async function getDeepSeekResponse(messages) {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${API_KEY}`
+                },
+                body: JSON.stringify({
+                    model: "deepseek-chat",
+                    messages: messages,
+                    temperature: 0.7,
+                    max_tokens: 1000
+                })
+            });
             
-            if (lowerMessage.includes('halo') || lowerMessage.includes('hai') || lowerMessage.includes('hi')) {
-                return "Halo! Ada yang bisa saya bantu?";
-            } else if (lowerMessage.includes('nama') && lowerMessage.includes('kamu')) {
-                return "Nama saya AI ZanDKav. Saya asisten virtual cerdas yang siap membantu Anda!";
-            } else if (lowerMessage.includes('terima kasih') || lowerMessage.includes('thanks')) {
-                return "Sama-sama! Senang bisa membantu. Ada lagi yang bisa saya bantu?";
-            } else if (lowerMessage.includes('apa kabar') || lowerMessage.includes('how are you')) {
-                return "Saya selalu baik karena saya program komputer! Bagaimana dengan Anda?";
-            } else if (lowerMessage.includes('buat') && lowerMessage.includes('website')) {
-                return "Untuk membuat website, Anda perlu mempelajari HTML, CSS, dan JavaScript. Atau Anda bisa menggunakan platform seperti WordPress jika ingin lebih mudah. Mau saya jelaskan lebih detail?";
-            } else if (lowerMessage.includes('ai') || lowerMessage.includes('kecerdasan buatan')) {
-                return "AI (Artificial Intelligence) adalah simulasi kecerdasan manusia oleh mesin. Saya adalah contoh AI yang bisa berkomunikasi dan membantu Anda. AI bisa digunakan untuk berbagai bidang seperti kesehatan, pendidikan, bisnis, dan hiburan.";
-            } else {
-                // Jika tidak mengenali pola tertentu, berikan respon umum
-                const randomResponses = [
-                    "Saya mengerti pertanyaan Anda. Bisakah Anda menjelaskan lebih detail?",
-                    "Menarik pertanyaannya! Saya bisa membantu dengan itu. Apa yang spesifik ingin Anda ketahui?",
-                    "Saya dirancang untuk membantu berbagai topik. Bisakah Anda mengembangkan pertanyaan Anda?",
-                    "Itu pertanyaan yang bagus! Saya perlu sedikit lebih banyak konteks untuk memberikan jawaban yang tepat.",
-                    "Saya bisa membantu dengan itu. Beri tahu saya lebih banyak tentang apa yang Anda cari."
-                ];
-                return randomResponses[Math.floor(Math.random() * randomResponses.length)];
+            if (!response.ok) {
+                throw new Error(`API request failed with status ${response.status}`);
             }
+            
+            const data = await response.json();
+            return data.choices[0].message.content;
         }
     </script>
 </body>
