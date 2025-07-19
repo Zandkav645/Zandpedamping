@@ -145,14 +145,14 @@
     <div class="container">
         <h1>Selamat Datang Di Web AI <span class="zandkav">ZanDKav</span></h1>
         <p class="description">
-            AI ZanDKav adalah asisten virtual cerdas berbasis DeepSeek AI yang siap membantu Anda.
+            AI ZanDKav adalah asisten virtual cerdas berbasis Google Gemini yang siap membantu Anda.
         </p>
         <button class="btn" id="startBtn">Mulai Chat</button>
         
         <div class="chat-container" id="chatContainer">
             <div class="chat-messages" id="chatMessages">
                 <div class="message ai-message">
-                    Halo! Saya AI ZanDKav. Ada yang bisa saya bantu?
+                    Halo! Saya AI ZanDKav berbasis Google Gemini. Ada yang bisa saya bantu?
                 </div>
             </div>
             
@@ -169,9 +169,9 @@
     </div>
 
     <script>
-        // Konfigurasi API
-        const API_KEY = 'sk-b74b72cec57548f2ad2ac8735f50b18a'; // Ganti dengan API key yang valid
-        const API_URL = 'https://api.deepseek.com';
+        // Konfigurasi API Google Gemini
+        const API_KEY = 'AIzaSyDi8Mxpo1A9ve9j38dpvHZTlL-J-W6NHUE';
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`;
         
         // Elemen UI
         const startBtn = document.getElementById('startBtn');
@@ -186,12 +186,12 @@
         // Riwayat percakapan
         let conversationHistory = [
             {
-                role: "system",
-                content: "Anda adalah AI ZanDKav, asisten AI yang ramah dan membantu. Gunakan bahasa Indonesia yang baik dan santun."
+                role: "user",
+                parts: [{ text: "Anda adalah AI ZanDKav, asisten AI yang ramah dan membantu. Gunakan bahasa Indonesia yang baik dan santun." }]
             },
             {
-                role: "assistant",
-                content: "Halo! Saya AI ZanDKav. Ada yang bisa saya bantu?"
+                role: "model",
+                parts: [{ text: "Halo! Saya AI ZanDKav berbasis Google Gemini. Ada yang bisa saya bantu?" }]
             }
         ];
         
@@ -215,7 +215,10 @@
             
             // Tampilkan pesan pengguna
             addMessage(message, 'user');
-            conversationHistory.push({ role: "user", content: message });
+            conversationHistory.push({ 
+                role: "user",
+                parts: [{ text: message }]
+            });
             userInput.value = '';
             
             // Persiapan permintaan AI
@@ -225,18 +228,18 @@
             sendBtn.disabled = true;
             
             try {
-                // Permintaan ke API DeepSeek
+                // Permintaan ke API Google Gemini
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${API_KEY}`
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        model: "deepseek-chat",
-                        messages: conversationHistory,
-                        temperature: 0.7,
-                        max_tokens: 800
+                        contents: conversationHistory,
+                        generationConfig: {
+                            temperature: 0.7,
+                            maxOutputTokens: 800
+                        }
                     })
                 });
                 
@@ -246,10 +249,13 @@
                 }
                 
                 const data = await response.json();
-                const aiResponse = data.choices[0].message.content;
+                const aiResponse = data.candidates[0].content.parts[0].text;
                 
                 // Tambahkan respon ke riwayat dan tampilkan
-                conversationHistory.push({ role: "assistant", content: aiResponse });
+                conversationHistory.push({ 
+                    role: "model",
+                    parts: [{ text: aiResponse }]
+                });
                 addMessage(aiResponse, 'ai');
                 
             } catch (error) {
@@ -259,7 +265,10 @@
                 // Beri respon default jika API gagal
                 const fallbackResponse = "Maaf, terjadi kesalahan. Silakan coba lagi nanti.";
                 addMessage(fallbackResponse, 'ai');
-                conversationHistory.push({ role: "assistant", content: fallbackResponse });
+                conversationHistory.push({ 
+                    role: "model",
+                    parts: [{ text: fallbackResponse }]
+                });
                 
             } finally {
                 typingIndicator.style.display = 'none';
@@ -288,12 +297,12 @@
         function clearConversation() {
             conversationHistory = [
                 {
-                    role: "system",
-                    content: "Anda adalah AI ZanDKav, asisten AI yang ramah dan membantu. Gunakan bahasa Indonesia yang baik dan santun."
+                    role: "user",
+                    parts: [{ text: "Anda adalah AI ZanDKav, asisten AI yang ramah dan membantu. Gunakan bahasa Indonesia yang baik dan santun." }]
                 },
                 {
-                    role: "assistant",
-                    content: "Percakapan telah direset. Ada yang bisa saya bantu?"
+                    role: "model",
+                    parts: [{ text: "Percakapan telah direset. Ada yang bisa saya bantu?" }]
                 }
             ];
             
